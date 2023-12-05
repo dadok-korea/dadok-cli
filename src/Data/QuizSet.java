@@ -1,11 +1,8 @@
+package Data;
+
 public class QuizSet {
     private String[][] options;
     private int[] answers;
-
-    public QuizSet(String[][] options, int[] answers) {
-        this.options = options;
-        this.answers = answers;
-    }
 
     public String[][] getOptions() {
         return options;
@@ -13,5 +10,13 @@ public class QuizSet {
 
     public int[] getAnswers() {
         return answers;
+    }
+
+    public void setOptions(String[][] options) {
+        this.options = options;
+    }
+
+    public void setAnswers(int[] answers) {
+        this.answers = answers;
     }
 }
