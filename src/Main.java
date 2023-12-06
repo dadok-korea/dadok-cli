@@ -1,7 +1,4 @@
-import Data.Game;
-import Data.QuizSet;
-import Data.Rank;
-import Data.User;
+import Data.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -9,21 +6,20 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws SQLException, IOException {
-
         CommandInterface commandInterface = new CommandInterface();
         Query query = new Query();
         query.dbConnect();
         query.dbInit();
-        String userName = "";
 
         while (true) {
             int mode = commandInterface.printMain();
             switch (mode) {
                 case 1:
-                    userName = commandInterface.getUserName();
-                    QuizSet quizSet = query.getQuizSet();
-                    Rank rank = commandInterface.printGame(quizSet, userName);
-                    query.insertRank(rank);
+                    Client client = commandInterface.getClientId();
+                    query.insertClient(client);
+                    QuizSetList quizSetList = query.getQuizSet();
+                    Game game = commandInterface.printGame(quizSetList, client);
+                    query.insertGame(game);
                     break;
                 case 2:
                     int rankMode = commandInterface.getRankMode();
@@ -45,8 +41,8 @@ public class Main {
                     break;
                 case 3:
                     String searchUserName = commandInterface.getSearchUserName();
-                    User user = query.getSearchUser(searchUserName);
-                    List<Game> gameList = query.getUserGameList(user.getUserName());
+                    Client user = query.getSearchUser(searchUserName);
+                    List<Game> gameList = query.selectClientGameList(user.getClientId());
                     commandInterface.printSearchUser(user, gameList);
                     break;
                 case 4:

@@ -1,0 +1,1 @@
+INSERT INTO Client (ClientID, Password, NumberOfGames, TierScore) VALUES (?, ?, 0, 0)

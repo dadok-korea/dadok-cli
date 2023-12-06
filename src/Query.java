@@ -1,7 +1,4 @@
-import Data.Game;
-import Data.QuizSet;
-import Data.Rank;
-import Data.User;
+import Data.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,169 +9,168 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.Date;
 
 public class Query {
     private static Connection connection;
-    private static Statement stmt;
 
     public void dbConnect() throws SQLException {
-        loadEnvFromFile(".env");
+        loadEnvFromFile();
         String url = "jdbc:postgresql://" + System.getProperty("DB_HOST") + ":" + System.getProperty("DB_PORT") + "/" + System.getProperty("DB_NAME");
         String username = System.getProperty("DB_USER");
         String password = System.getProperty("DB_PASSWORD");
 
         connection = DriverManager.getConnection(url, username, password);
-        stmt = connection.createStatement();
     }
 
     public void dbInit() throws SQLException, IOException {
-        try {
-            executeQuery("createTable");
-            executeQuery("insertIA");
-            executeQuery("makeQuizset");
-        } catch (SQLException e) {
+
+        String[] sqlFiles = {
+                "IndependenceActivists",
+                "proJapaneseActivator",
+                "CombinedTable",
+                "ProblemSet",
+                "Indexing",
+                "Game",
+                "Client",
+                "View",
+                "Trigger",
+//                "TestQueries"
+        };
+
+        for (String sqlFile : sqlFiles) {
+            executeQuery("init/" + sqlFile);
         }
     }
 
-    public List<Rank> getTimeRank() throws SQLException, IOException {
-        List<Rank> ranks = new ArrayList<>();
-        ResultSet resultSet = executeQuery("viewTimeRank");
-
-        try {
-            while (resultSet.next()) {
-                Rank rank = new Rank();
-                rank.setUserName(resultSet.getString("user_name"));
-                rank.setSolvedTime(resultSet.getLong("solved_time"));
-                rank.setSolvedNum(resultSet.getInt("solved_num"));
-                rank.setTimestamp(resultSet.getDate("timestamp"));
-                ranks.add(rank);
-            }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-        }
-
-        return ranks;
+    public void insertClient(Client client) throws SQLException, IOException {
+        executeQuery( "logic/InsertClient", client.getClientId(), client.getPassword());
     }
 
-    public List<Game> getUserGameList(String userName) throws SQLException, IOException {
+    public List<Game> selectClientGameList(String userName) throws SQLException, IOException {
         List<Game> gameList = new ArrayList<>();
-        ResultSet resultSet = executeQuery("searchUserGameList", userName);
+        List<Map<String, Object>> resultSet = executeQuery( "logic/SelectSearchUserGame", userName);
 
-        try {
-            while (resultSet.next()) {
+        if(resultSet != null) {
+            for (int i = 0; i < resultSet.size(); i++) {
                 Game game = new Game();
-                QuizSet quizSet = new QuizSet();
-                game.setUserName(resultSet.getString("user_name"));
-                game.setSolvedTime(resultSet.getLong("solved_time"));
-                game.setTimeStamp(resultSet.getString("time_Stamp"));
-                game.setScore(resultSet.getInt("score"));
-
-                game.setQuizSet(quizSet);
+                game.setTimestamp((Date) resultSet.get(i).get("timestamp"));
+                game.setProblemSetId((Integer) resultSet.get(i).get("problemsetid"));
+                game.setSolvedTime(Long.valueOf(resultSet.get(i).get("playtime").toString()));
+                String cleanedString = resultSet.get(i).get("selectanswer").toString().replaceAll("[\\[\\] ]", "");
+                String[] stringArray = cleanedString.split(",");
+                int[] intArray = new int[stringArray.length];
+                for (int j = 0; j < stringArray.length; j++) {
+                    intArray[i] = Integer.parseInt(stringArray[i].trim());
+                }
+                game.setSelectedAnswers(intArray);
+                game.setScore((Integer) resultSet.get(i).get("score"));
                 gameList.add(game);
-            }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
             }
         }
 
         return gameList;
     }
 
-    public List<Rank> getTierRank() throws SQLException, IOException {
+    public List<Rank> getTimeRank() throws SQLException, IOException {
         List<Rank> ranks = new ArrayList<>();
-        ResultSet resultSet = executeQuery("viewTimeRank");
+        List<Map<String, Object>> resultSet = executeQuery( "logic/SelectTimeRank");
 
-        try {
-            while (resultSet.next()) {
+        if(resultSet != null) {
+            for(int i = 0; i < resultSet.size(); i++) {
                 Rank rank = new Rank();
-                rank.setUserName(resultSet.getString("user_name"));
-                rank.setSolvedTime(resultSet.getLong("solved_time"));
-                rank.setSolvedNum(resultSet.getInt("solved_num"));
-                rank.setTimestamp(resultSet.getDate("timestamp"));
+                rank.setClientId((String) resultSet.get(i).get("clientid"));
+                rank.setScore((Integer) resultSet.get(i).get("score"));
+                rank.setSolvedTime(Long.valueOf(resultSet.get(i).get("playtime").toString()));
+                rank.setTimestamp((Date) resultSet.get(i).get("timestamp"));
                 ranks.add(rank);
             }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
+        }
+        return ranks;
+    }
+
+    public List<Rank> getTierRank() throws SQLException, IOException {
+        List<Rank> ranks = new ArrayList<>();
+        List<Map<String, Object>> resultSet = executeQuery( "logic/SelectTierRank");
+
+        if(resultSet != null) {
+            for (int i = 0; i < resultSet.size(); i++) {
+                Rank rank = new Rank();
+                rank.setClientId((String) resultSet.get(i).get("clientid"));
+                rank.setTierScore((Integer) resultSet.get(i).get("tierscore"));
+                rank.setTimestamp((Date) resultSet.get(i).get("timestamp"));
+                rank.setNumOfGames((Integer) resultSet.get(i).get("numberofgames"));
+                ranks.add(rank);
             }
         }
 
         return ranks;
     }
 
-    public User getSearchUser(String searchUserName) throws SQLException, IOException {
-        ResultSet resultSet = executeQuery("searchUser", searchUserName);
-        User user = new User();
+    public Client getSearchUser(String searchUserName) throws SQLException, IOException {
+        List<Map<String, Object>> resultSet = executeQuery( "logic/SelectSearchUser", searchUserName);
+        Client client = new Client();
 
-        try {
-            while (resultSet.next()) {
-                user.setUserName(resultSet.getString("user_name"));
-                user.setPassword(resultSet.getString("password"));
-                user.setGameCount(resultSet.getInt("game_count"));
-                user.setTierScore(resultSet.getInt("tier_score"));
-            }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
+        if(resultSet != null) {
+            for (int i = 0; i < resultSet.size(); i++) {
+                client.setClientId((String) resultSet.get(i).get("clientid"));
+                client.setPassword((String) resultSet.get(i).get("password"));
+                client.setTierScore((Integer) resultSet.get(i).get("tierscore"));
+                client.setNumOfGames((Integer) resultSet.get(i).get("numberofgames"));
             }
         }
-
-        return user;
+        return client;
     }
 
-    public void insertRank (Rank rank) throws SQLException, IOException {
-        List<Rank> ranks = new ArrayList<>();
-        ResultSet resultSet = stmt.executeQuery(parsingQuery("selectRank"));
+    public void insertGame (Game game) throws SQLException, IOException {
+        Timestamp timestamp = new Timestamp(game.getTimestamp().getTime());
+        executeQuery( "logic/InsertGame", timestamp, game.getClientId(), game.getProblemSetId(), game.getSolvedTime(), Arrays.toString(game.getSelectedAnswers()), game.getScore());
+    }
 
-        try {
-            while (resultSet.next()) {
-                if(Objects.equals(resultSet.getString("user_name"), rank.getUserName())) {
-                    if(resultSet.getLong("solved_time") > rank.getSolvedTime() && resultSet.getInt("solved_num") <= rank.getSolvedNum()) {
-                        rank.setUserName(resultSet.getString("user_name"));
-                        rank.setSolvedTime(resultSet.getLong("solved_time"));
-                        rank.setTimestamp(resultSet.getDate("timestamp"));
-                        ranks.add(rank);
-                    }
+    public QuizSetList getQuizSet () throws SQLException, IOException {
+        QuizSetList result = new QuizSetList();
+        List<QuizSet> quizSetList = new ArrayList<>();
+        List<Map<String, Object>> resultSet = executeQuery( "logic/SelectCombinedids");
+        List<Integer> integerList = new ArrayList<>();
+
+        result.setProblemSetId((Integer) resultSet.get(0).get("problemsetid"));
+
+        String[] parts = resultSet.get(0).get("combinedids").toString().replaceAll("[{}]", "").split(",");
+        for (String part : parts) {
+            integerList.add(Integer.parseInt(part.trim()));
+        }
+
+        for (Integer combinedid : integerList) {
+            List<Map<String, Object>> resultSetList = executeQuery( "logic/SelectProblemSet", combinedid);
+
+            if(resultSetList != null) {
+                for (int i = 0; i < resultSetList.size(); i++) {
+                    QuizSet quizSet = new QuizSet();
+
+                    List<String> stringList = new ArrayList<>(List.of(resultSetList.get(i).get("성명").toString().replaceAll("[{}]", "").split(",\\s*")));
+                    stringList.add((String) resultSetList.get(i).get("정답"));
+                    Collections.shuffle(stringList);
+                    String[] shuffledArray = stringList.toArray(new String[0]);
+
+                    quizSet.setOptions(shuffledArray);
+                    quizSet.setAnswers((String) resultSetList.get(i).get("정답"));
+                    quizSet.setLink((String) resultSetList.get(i).get("링크"));
+                    quizSet.setImgLink((String) resultSetList.get(i).get("이미지링크"));
+                    quizSet.setVidLink((String) resultSetList.get(i).get("비디오링크"));
+                    quizSet.setPeriod((String) resultSetList.get(i).get("생몰년"));
+                    quizSet.setWhat((String) resultSetList.get(i).get("행위_설명"));
+                    quizSetList.add(quizSet);
                 }
             }
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
-            }
         }
 
-        executeQuery("insertRank", rank.getUserName(), rank.getSolvedTime(), rank.getTimestamp());
+        result.setQuizSetList(quizSetList);
+        return result;
     }
 
-    public QuizSet getQuizSet () throws SQLException {
-        String[][] options = {
-                {"Paris", "Rome", "Berlin", "Madrid"},
-                {"Elephant", "Giraffe", "Blue Whale", "Lion"},
-                {"Paris", "Rome", "Berlin", "Madrid"},
-                {"Elephant", "Giraffe", "Blue Whale", "Lion"},
-                {"Paris", "Rome", "Berlin", "Madrid"},
-                {"Elephant", "Giraffe", "Blue Whale", "Lion"},
-                {"Paris", "Rome", "Berlin", "Madrid"},
-                {"Elephant", "Giraffe", "Blue Whale", "Lion"},
-                {"Paris", "Rome", "Berlin", "Madrid"},
-                {"Elephant", "Giraffe", "Blue Whale", "Lion"},
-        };
-
-        int[] answers = {1, 2, 3, 4, 1, 2, 3, 4, 1, 2};
-        QuizSet quizSet = new QuizSet();
-        quizSet.setOptions(options);
-        quizSet.setAnswers(answers);
-        return quizSet;
-    }
-
-    private static void loadEnvFromFile(String filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+    private static void loadEnvFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(".env"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("=", 2);
@@ -191,24 +187,34 @@ public class Query {
 
     private static String parsingQuery(String fileName) throws IOException {
         Path path = Path.of("src/SQL/", fileName + ".sql");
-        String query = Files.readString(path, StandardCharsets.UTF_8);
-        return query;
+        return Files.readString(path, StandardCharsets.UTF_8);
     }
 
-    private static ResultSet executeQuery(String fileName, Object... values) throws SQLException, IOException {
-        Path path = Path.of("src/SQL/", fileName + ".sql");
-        String query = Files.readString(path, StandardCharsets.UTF_8);
+    private static List<Map<String, Object>> executeQuery(String fileName, Object... values) throws SQLException, IOException {
+        String query = parsingQuery(fileName);
+        List<Map<String, Object>> resultList = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             for (int i = 0; i < values.length; i++) {
                 preparedStatement.setObject(i + 1, values[i]);
             }
-            System.out.println(preparedStatement);
 
-            try (ResultSet resultSet = stmt.executeQuery(preparedStatement.toString()+";")) {
-                return resultSet;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                while (resultSet.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    for (int i = 1; i <= columnCount; i++) {
+                        String columnName = metaData.getColumnName(i);
+                        Object value = resultSet.getObject(i);
+                        row.put(columnName, value);
+                    }
+                    resultList.add(row);
+                }
             } catch (SQLException sqlException) {
                 return null;
             }
         }
+        return resultList;
     }
 }

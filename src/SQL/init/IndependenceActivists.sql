@@ -1,3 +1,14 @@
+CREATE TABLE IF NOT EXISTS IndependenceActivists (
+ID SERIAL PRIMARY KEY,
+Name VARCHAR(10),
+Link VARCHAR(500),
+ImageLink VARCHAR(500),
+Description VARCHAR(300),
+BirthDate INTEGER,
+DeathDate INTEGER,
+VideoLink VARCHAR(255)
+);
+
 INSERT INTO IndependenceActivists (Name, Link, ImageLink, Description, BirthDate, DeathDate, VideoLink) VALUES ('강우규', 'http://navercast.naver.com/contents.nhn?contents_id=11698&leafId=129', 'http://ncc.phinf.naver.net/ncc02/2012/8/13/113/frame01.jpg', '내가 죽어 청년들의 가슴에 조그마한 충격이라도 줄 수 있다면 내가 소원하는 일이다', 18550714, 19201129, 'https://youtu.be/pCuYNDvuskU');
 INSERT INTO IndependenceActivists (Name, Link, ImageLink, Description, BirthDate, DeathDate, VideoLink) VALUES ('고광순', 'http://navercast.naver.com/contents.nhn?contents_id=7122&leafId=129', 'http://ncc.phinf.naver.net/ncc01/2011/12/21/288/frame01.jpg', '임란 의병장 고경명의 후손, 구한말 의병장으로 다시 칼을 잡다', 18480207, 19071016, 'https://youtu.be/-CwSfES0uzQ');
 INSERT INTO IndependenceActivists (Name, Link, ImageLink, Description, BirthDate, DeathDate, VideoLink) VALUES ('곽재기', 'http://navercast.naver.com/contents.nhn?contents_id=4637&leafId=129', 'http://ncc.phinf.naver.net/ncc01/2011/1/27/93/111.jpg', '김원봉, 이성우 등과 함께 만주 길림성에서 의열단을 조직하다', 18930207, 19520110, '');

@@ -1,36 +1,63 @@
 package Data;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
 public class Game {
-    private String userName;
-    private String timeStamp;
-    private QuizSet quizSet;
+    private String clientId;
+    private Date timestamp;
+    private int problemSetId;
     private Long solvedTime;
     private int score;
+    private int[] selectedAnswers;
 
-    public String getUserName() {
-        return userName;
+    public String getClientId() {
+        return clientId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public String getTypedSolvedTime() {
+        if (solvedTime < 0) {
+            throw new IllegalArgumentException("Duration must be a non-negative number.");
+        }
+
+        long seconds = solvedTime / 1000;
+        long milliSeconds = solvedTime % 1000;
+
+        StringBuilder solvedTimeFormat = new StringBuilder();
+        solvedTimeFormat.append(seconds).append(".");
+        solvedTimeFormat.append(milliSeconds).append(" 초");
+
+        return solvedTimeFormat.toString().trim();
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public int getProblemSetId() {
+        return problemSetId;
     }
 
-    public QuizSet getQuizSet() {
-        return quizSet;
+    public void setProblemSetId(int problemSetId) {
+        this.problemSetId = problemSetId;
     }
 
-    public void setQuizSet(QuizSet quizSet) {
-        this.quizSet = quizSet;
+    public int[] getSelectedAnswers() {
+        return selectedAnswers;
     }
 
+    public void setSelectedAnswers(int[] selectedAnswers) {
+        this.selectedAnswers = selectedAnswers;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date date) {
+        this.timestamp = date;
+    }
     public Long getSolvedTime() {
         return solvedTime;
     }
@@ -45,5 +72,17 @@ public class Game {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "clientId='" + clientId + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", problemSetId=" + problemSetId +
+                ", solvedTime=" + solvedTime +
+                ", score=" + score +
+                ", selectedAnswers=" + Arrays.toString(selectedAnswers) +
+                '}';
     }
 }

@@ -1,0 +1,1 @@
+INSERT INTO Game (timestamp, clientid, problemsetid, playtime, selectanswer, score) VALUES (?, ?, ?, ?, ?, ?)

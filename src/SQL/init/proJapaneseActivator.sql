@@ -1,3 +1,15 @@
+CREATE TABLE IF NOT EXISTS proJapaneseActivator (
+no SERIAL PRIMARY KEY,
+부문 VARCHAR(4),
+분야 VARCHAR(4),
+분류 VARCHAR(10),
+성명 VARCHAR(4),
+생몰년 VARCHAR(20),
+친일반민족행위 VARCHAR(600),
+적용_법호 VARCHAR(100),
+선정_결정 VARCHAR(300)
+);
+
 INSERT INTO proJapaneseActivator (no, 부문, 분야, 분류, 성명, 생몰년, 친일반민족행위, 적용_법호, 선정_결정) VALUES (1, '정치', '귀족', '매국ㆍ수작', '고영희', '1849~
  1916', '-고종황제 강제양위 주도, 한일신협약 체결 모의 및 참여, 대한제국 경찰권의 통감부 이양 심의 의결 과정 참여, 한일합병조약 체결 모의 및 참여
  -자작
@@ -5402,7 +5414,6 @@ INSERT INTO proJapaneseActivator (no, 부문, 분야, 분류, 성명, 생몰년,
 INSERT INTO proJapaneseActivator (no, 부문, 분야, 분류, 성명, 생몰년, 친일반민족행위, 적용_법호, 선정_결정) VALUES (1003, '정치', '해외', '일본지역', '이선홍', '1895~
  1944', '-오사카협화협력회 위원장, 지원병ㆍ징병 선전ㆍ선동
  -조선인협회 회장, 중앙협의단 상임위원, 내선융화 적극 주장', '11호
-
  13호', '33차(07.04.09)
  43차(07.09.10)');
 INSERT INTO proJapaneseActivator (no, 부문, 분야, 분류, 성명, 생몰년, 친일반민족행위, 적용_법호, 선정_결정) VALUES (1004, '정치', '해외', '일본지역', '임용길', '1898~

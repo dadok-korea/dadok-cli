@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS Client (
+ClientID VARCHAR(30) UNIQUE,
+Password VARCHAR(30),
+NumberOfGames INTEGER,
+TierScore INTEGER
+);

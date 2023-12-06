@@ -1,17 +1,25 @@
 package Data;
 
-public class User {
-    private String userName;
+public class Client {
+    private String clientId;
     private String password;
     private int tierScore;
-    private int gameCount;
+    private int numOfGames;
 
-    public String getUserName() {
-        return userName;
+    public int getNumOfGames() {
+        return numOfGames;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setNumOfGames(int numOfGames) {
+        this.numOfGames = numOfGames;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     public String getPassword() {
@@ -28,13 +36,5 @@ public class User {
 
     public void setTierScore(int tierScore) {
         this.tierScore = tierScore;
-    }
-
-    public int getGameCount() {
-        return gameCount;
-    }
-
-    public void setGameCount(int gameCount) {
-        this.gameCount = gameCount;
     }
 }

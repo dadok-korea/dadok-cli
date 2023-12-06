@@ -4,12 +4,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Rank {
-        private String userName;
+        private String clientId;
         private Long solvedTime;
         private String timestamp;
-        private int solvedNum;
+        private int score;
         private int tierScore;
         private int gameCount;
+        private int numOfGames;
+
+        public void setTimestamp(String timestamp) {
+                this.timestamp = timestamp;
+        }
+
+        public int getNumOfGames() {
+                return numOfGames;
+        }
+
+        public void setNumOfGames(int numOfGames) {
+                this.numOfGames = numOfGames;
+        }
 
         public int getTierScore() {
                 return tierScore;
@@ -27,12 +40,12 @@ public class Rank {
                 this.gameCount = gameCount;
         }
 
-        public int getSolvedNum() {
-                return solvedNum;
+        public int getScore() {
+                return score;
         }
 
-        public void setSolvedNum(int solvedNum) {
-                this.solvedNum = solvedNum;
+        public void setScore(int score) {
+                this.score = score;
         }
 
         public String getTypedSolvedTime() {
@@ -54,10 +67,6 @@ public class Rank {
                 this.solvedTime = paramMS;
         }
 
-        public void setUserName(String userName) {
-                this.userName = userName;
-        }
-
         public void setTimestamp(Date date) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 this.timestamp = dateFormat.format(date);
@@ -67,11 +76,15 @@ public class Rank {
                 return solvedTime;
         }
 
-        public String getUserName() {
-                return userName;
-        }
-
         public String getTimestamp() {
                 return timestamp;
+        }
+
+        public String getClientId() {
+                return clientId;
+        }
+
+        public void setClientId(String clientId) {
+                this.clientId = clientId;
         }
 }

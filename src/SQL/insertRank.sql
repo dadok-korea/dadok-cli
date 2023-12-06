@@ -1,1 +1,0 @@
-INSERT INTO rank_table (user_name, solved_time, timestamp) VALUES (?, ?, ?);

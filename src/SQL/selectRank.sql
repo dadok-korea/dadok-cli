@@ -1,1 +1,0 @@
-SELECT * FROM rank_table ORDER BY solved_time LIMIT 10;
