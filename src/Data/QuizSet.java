@@ -1,5 +1,7 @@
 package Data;
 
+import java.util.Arrays;
+
 public class QuizSet {
     private String[] options;
     private String answers;

@@ -73,16 +73,4 @@ public class Game {
     public void setScore(int score) {
         this.score = score;
     }
-
-    @Override
-    public String toString() {
-        return "Game{" +
-                "clientId='" + clientId + '\'' +
-                ", timestamp='" + timestamp + '\'' +
-                ", problemSetId=" + problemSetId +
-                ", solvedTime=" + solvedTime +
-                ", score=" + score +
-                ", selectedAnswers=" + Arrays.toString(selectedAnswers) +
-                '}';
-    }
 }

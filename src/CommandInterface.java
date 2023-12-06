@@ -137,6 +137,16 @@ public class CommandInterface {
                     System.out.println("오답입니다! 정답은 " + quizSet.getAnswers() + "입니다!");
                 }
             }
+            System.out.println("이름 : " + quizSet.getAnswers());
+           System.out.println("\"" + quizSet.getWhat() + "\"");
+           System.out.println(quizSet.getPeriod());
+           System.out.println("참고자료 : " + quizSet.getLink());
+           if(!Objects.equals(quizSet.getImgLink(), "")) {
+               System.out.println("사진 : " + quizSet.getImgLink());
+           }
+           if(!Objects.equals(quizSet.getVidLink(), "")) {
+               System.out.println("영상 : " + quizSet.getVidLink());
+           }
         }
         endTime = new Date();
 
